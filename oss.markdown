@@ -38,12 +38,12 @@ Apache Accumulo is a sorted, distributed key/value store modelled after [Google 
 <br/>
 <br/>
 
-# Summernote
+# [Summernote](https://summernote.org/)
 Summernote is a simple WYSIWYG editor.
 - [Fixed bug that allowed users to bypass a maximum text length](https://github.com/summernote/summernote/pull/2865)
 <br/>
 <br/>
 
-# Jackson
+# [Jackson](https://github.com/FasterXML/jackson)
 Jackson is a Java JSON serialization/deserialization framework.
 - [Added ability to register different configurations for objects of the same type but with different names](https://github.com/FasterXML/jackson-databind/pull/2523)
