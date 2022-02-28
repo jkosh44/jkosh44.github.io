@@ -4,6 +4,11 @@ title: Open Source Projects
 permalink: /oss/
 ---
 
+# [<img src="/assets/img/pg_logo.png" width="75"/>](https://www.postgresql.org/) PostgreSQL
+- [Handle integer overflow in interval justification functions](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=54bd1e43ca56e323aef309dc2dc0e1391825ce68)
+<br/>
+<br/>
+
 # [<img src="/assets/img/noisepage-icon.svg" width="75"/>](https://github.com/cmu-db/postgres) PG-NoisePage
 PG-NoisePage is a fork of postgresql with the attempt to port NoisePage's self driving infrastructure over to Postgresql.
 - [Implemented functionality to take online copies of replica nodes in order to gather training data](https://github.com/cmu-db/postgres/pull/19)
