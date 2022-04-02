@@ -6,6 +6,7 @@ permalink: /oss/
 
 # [<img src="/assets/img/pg_logo.png" width="75"/>](https://www.postgresql.org/) PostgreSQL
 - [Handle integer overflow in interval justification functions](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=54bd1e43ca56e323aef309dc2dc0e1391825ce68)
+- [Fix overflow hazards in interval input and output conversions](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=e39f9904671082c5ad3a2c5acbdbd028fa93bf35)
 <br/>
 <br/>
 
