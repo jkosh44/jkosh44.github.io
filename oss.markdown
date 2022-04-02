@@ -4,19 +4,19 @@ title: Open Source Projects
 permalink: /oss/
 ---
 
-# [<img src="/assets/img/pg_logo.png" width="75"/>](https://www.postgresql.org/) PostgreSQL
+# [<img src="/assets/img/pg_logo.png" width="75"/>](https://www.postgresql.org/) [PostgreSQL](https://www.postgresql.org/)
 - [Handle integer overflow in interval justification functions](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=54bd1e43ca56e323aef309dc2dc0e1391825ce68)
 - [Fix overflow hazards in interval input and output conversions](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=e39f9904671082c5ad3a2c5acbdbd028fa93bf35)
 <br/>
 <br/>
 
-# [<img src="/assets/img/noisepage-icon.svg" width="75"/>](https://github.com/cmu-db/postgres) PG-NoisePage
+# [<img src="/assets/img/noisepage-icon.svg" width="75"/>](https://github.com/cmu-db/postgres) [PG-NoisePage](https://github.com/cmu-db/postgres)
 PG-NoisePage is a fork of postgresql with the attempt to port NoisePage's self driving infrastructure over to Postgresql.
 - [Implemented functionality to take online copies of replica nodes in order to gather training data](https://github.com/cmu-db/postgres/pull/19)
 <br/>
 <br/>
 
-# [<img src="/assets/img/noisepage-icon.svg" width="75"/>](https://noise.page/) NoisePage
+# [<img src="/assets/img/noisepage-icon.svg" width="75"/>](https://noise.page/) [NoisePage](https://noise.page/)
 NoisePage is a DBMS developed at Carnegie Mellon University that uses machine learning to control its configuration, optimization, and tuning. \
 *([All PRs](https://github.com/cmu-db/noisepage/pulls?q=is%3Apr+is%3Aclosed+author%3Ajkosh44))*
 - [Implemented data table statistics tracking for cost-based query optimizer (ANALYZE)](https://github.com/cmu-db/noisepage/pull/1450)
@@ -28,7 +28,7 @@ NoisePage is a DBMS developed at Carnegie Mellon University that uses machine le
 <br/>
 <br/>
 
-# [<img src="/assets/img/fluo-logo.png" width="75"/>](https://fluo.apache.org/) Apache Fluo
+# [<img src="/assets/img/fluo-logo.png" width="75"/>](https://fluo.apache.org/) [Apache Fluo](https://fluo.apache.org/)
 *Committer and Project Management Committee (PMC) member*
 Apache Fluo is a distributed processing system that lets users make incremental updates to large data sets. It is built on top of [Apache Accumulo](https://accumulo.apache.org/) and modelled after [Google Percolator](https://research.google/pubs/pub36726/). \
 *([All PRs](https://github.com/apache/fluo/pulls?q=is%3Apr+is%3Aclosed+author%3Ajkosh44))*
@@ -38,7 +38,7 @@ Apache Fluo is a distributed processing system that lets users make incremental 
 <br/>
 <br/>
 
-# [<img src="/assets/img/accumulo-logo.png" width="75"/>](https://accumulo.apache.org/) Apache Accumulo
+# [<img src="/assets/img/accumulo-logo.png" width="75"/>](https://accumulo.apache.org/) [Apache Accumulo](https://accumulo.apache.org/)
 Apache Accumulo is a sorted, distributed key/value store modelled after [Google Bigtable](https://research.google/pubs/pub27898/).
 - [Implement method to fetch property by property name prefix](https://github.com/apache/accumulo/pull/1701)
 <br/>
