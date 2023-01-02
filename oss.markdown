@@ -38,6 +38,13 @@ Apache Fluo is a distributed processing system that lets users make incremental 
 <br/>
 <br/>
 
+# [Rust Postgres](https://github.com/sfackler/rust-postgres)
+Rust-Postgres is a PostgreSQL library for Rust.
+- [Add Multirange types](https://github.com/sfackler/rust-postgres/pull/963)
+- [Fix display of 0 dimensional arrays](https://github.com/sfackler/rust-postgres-array/pull/12)
+<br/>
+<br/>
+
 # [<img src="/assets/img/accumulo-logo.png" width="75"/>](https://accumulo.apache.org/) [Apache Accumulo](https://accumulo.apache.org/)
 Apache Accumulo is a sorted, distributed key/value store modelled after [Google Bigtable](https://research.google/pubs/pub27898/).
 - [Implement method to fetch property by property name prefix](https://github.com/apache/accumulo/pull/1701)
