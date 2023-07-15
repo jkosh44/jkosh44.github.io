@@ -5,6 +5,7 @@ permalink: /oss/
 ---
 
 # [<img src="/assets/img/pg_logo.png" width="75"/>](https://www.postgresql.org/) [PostgreSQL](https://www.postgresql.org/)
+- Fix privilege check for SET SESSION AUTHORIZATION [[0]](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=0fef8775382886bef023aee67cb744711ed7a32f) [[1]](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=9987a7bf34061ed5cffc4e5113da056358976e94) [[2]](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=a0363ab7aafda7d16ae59e72d86866c02ad3d657)
 - [Tighten error checks in datetime input, and remove bogus "ISO" format.](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=5b3c5953553bb9fb0b171abc6041e7c7e9ca5b4d)
 - [Reject combining "epoch" and "infinity" with other datetime fields.](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=bcc704b52490492e6bd73c4444056b3e9644504d)
 - [Fix overflow hazards in interval input and output conversions](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=e39f9904671082c5ad3a2c5acbdbd028fa93bf35)
