@@ -55,7 +55,7 @@ Apache Accumulo is a sorted, distributed key/value store modelled after [Google 
 <br/>
 <br/>
 
-# [Summernote](https://summernote.org/)
+# [<img src="/assets/img/summernote-logo.png" width="75"/>](https://summernote.org/) [Summernote](https://summernote.org/)
 Summernote is a simple WYSIWYG editor.
 - [Fix bug that allowed users to bypass a maximum text length](https://github.com/summernote/summernote/pull/2865)
 <br/>
