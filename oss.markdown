@@ -65,3 +65,7 @@ Summernote is a simple WYSIWYG editor.
 # [<img src="/assets/img/jackson-logo.png" width="75"/>](https://github.com/FasterXML/jackson) [Jackson](https://github.com/FasterXML/jackson)
 Jackson is a Java JSON serialization/deserialization framework.
 - [Add ability to register different configurations for objects of the same type but with different names](https://github.com/FasterXML/jackson-databind/pull/2523)
+
+# [JCommander](https://jcommander.org/)
+JCommander is an annotation based command line parameter parsing framework for Java.
+- [Fix `usage()` for missing description on commands](https://github.com/cbeust/jcommander/commit/d5e14a9b43a450acc1f595e2d9a9536e47514b2a)
