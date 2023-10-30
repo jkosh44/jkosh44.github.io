@@ -11,6 +11,7 @@ permalink: /oss/
 - [Reject combining "epoch" and "infinity" with other datetime fields.](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=bcc704b52490492e6bd73c4444056b3e9644504d)
 - [Fix overflow hazards in interval input and output conversions](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=e39f9904671082c5ad3a2c5acbdbd028fa93bf35)
 - [Handle integer overflow in interval justification functions](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=54bd1e43ca56e323aef309dc2dc0e1391825ce68)
+- [Guard against overflow in make_interval()](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=b2d55447a563036579d6777f64a7483dceeab6ea)
 
 <br/>
 <br/>
