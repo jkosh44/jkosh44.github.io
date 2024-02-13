@@ -6,6 +6,7 @@ permalink: /oss/
 
 # [<img src="/assets/img/pg_logo.png" width="75"/>](https://www.postgresql.org/) [PostgreSQL](https://www.postgresql.org/)
 - [Support +/- infinity in the interval data type](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=519fc1bd9e9d7b408903e44f55f83f6db30742b7)
+- [Catch overflow when rounding intervals in AdjustIntervalForTypmod](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=5ebc9c90173f32cffe373a80835f157b9ebfa3bd)
 - Tighten Interval parsing [[0]](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=d6d1430f404386162831bc32906ad174b2007776) [[1]](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=165d581f146b09543b832513ee00fead132ba6b1) [[2]](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=617f9b7d4b10fec00a86802eeb34d7295c52d747)
 - Fix privilege check for SET SESSION AUTHORIZATION [[0]](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=0fef8775382886bef023aee67cb744711ed7a32f) [[1]](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=9987a7bf34061ed5cffc4e5113da056358976e94) [[2]](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=a0363ab7aafda7d16ae59e72d86866c02ad3d657)
 - [Tighten error checks in datetime input, and remove bogus "ISO" format.](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=5b3c5953553bb9fb0b171abc6041e7c7e9ca5b4d)
