@@ -7,6 +7,7 @@ permalink: /oss/
 # [<img src="/assets/img/pg_logo.png" width="75"/>](https://www.postgresql.org/) [PostgreSQL](https://www.postgresql.org/)
 - [Support +/- infinity in the interval data type](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=519fc1bd9e9d7b408903e44f55f83f6db30742b7)
 - [Add overflow checks to money type](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=22b0ccd65d275d227a7d911aede12d34e1b5dfc9)
+- [Detect integer overflow in array_set_slice()](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=991f8cf8abe244547093ddffcc4b9209076f3525)
 - [Detect more overflows in timestamp[tz]_pl_interval](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=4019285c064028fbf613f0e43766416a63b826db)
 - [Catch overflow when rounding intervals in AdjustIntervalForTypmod](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=5ebc9c90173f32cffe373a80835f157b9ebfa3bd)
 - Tighten Interval parsing [[0]](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=d6d1430f404386162831bc32906ad174b2007776) [[1]](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=165d581f146b09543b832513ee00fead132ba6b1) [[2]](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=617f9b7d4b10fec00a86802eeb34d7295c52d747)
