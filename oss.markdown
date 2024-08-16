@@ -6,6 +6,7 @@ permalink: /oss/
 
 # [<img src="/assets/img/pg_logo.png" width="75"/>](https://www.postgresql.org/) [PostgreSQL](https://www.postgresql.org/)
 - [Support +/- infinity in the interval data type](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=519fc1bd9e9d7b408903e44f55f83f6db30742b7)
+- [Remove some dependence on signed integer wrapping](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=9e9a2b7031f64e49fcaf28f21a4e70eb1212165f)
 - [Add overflow checks to money type](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=22b0ccd65d275d227a7d911aede12d34e1b5dfc9)
 - [Fix incorrect return value for pg_size_pretty(bigint)](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=b181062aa5727a013c96b64476f884c992b5068d)
 - [Detect integer overflow in array_set_slice()](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=991f8cf8abe244547093ddffcc4b9209076f3525)
