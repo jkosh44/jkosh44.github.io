@@ -8,7 +8,10 @@ permalink: /experience/
 # [<img src="/assets/img/materialize_logo.png" width="75"/>](https://materialize.com/) Materialize
 #### **Software Engineer**
 *Feb 2021 - Current*
-- Contributed to a streaming database for real-time analytics built in Rust
+- Built and maintained the SQL layer and control plane of an operational database to allow multiple concurrent users to access their data via PostgreSQL compatible SQL
+- Designed and implemented a role based access control sub-system which allowed enterprise users to define and configure granular access control rules for objects in the database
+- Identified, designed, and implemented the Strict Serializable and Strong Session Serializable isolation levels so that users could trade off query latency with isolation and consistency
+- Wrote thread-safe catalog data structures, which enabled parallel query processing and blue-green based zero downtime version upgrades
 <br/>
 <br/>
 
@@ -30,7 +33,7 @@ permalink: /experience/
 # [<img src="/assets/img/chase-logo.png" width="75"/>](https://www.jpmorganchase.com/) JP Morgan Chase & Co.
 #### **Associate Software Engineer**
 *Nov 2018 - July 2020*
-- Developed distributed Java Spring REST services to serve data to 80mm Chase customers
+- Developed distributed Java Spring REST services to serve data to 80mm Chase customers at thousands of transactions per second
 - Created a distributed application using Apache Kafka to ingest, transform, and store consumer data
 - Built CI/CD pipelines using Jenkins and Cloud Foundry to build, test, scan, and deploy apps
 - Designed rewrite of critical application to increase maintainability, correctness, and performance
