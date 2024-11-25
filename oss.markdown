@@ -19,12 +19,16 @@ permalink: /oss/
 - [Fix overflow hazards in interval input and output conversions](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=e39f9904671082c5ad3a2c5acbdbd028fa93bf35)
 - [Handle integer overflow in interval justification functions](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=54bd1e43ca56e323aef309dc2dc0e1391825ce68)
 - [Guard against overflow in make_interval()](https://git.postgresql.org/gitweb/?p=postgresql.git;a=commit;h=b2d55447a563036579d6777f64a7483dceeab6ea)
+<br/>
+<br/>
 
+# [pg_duration](https://github.com/jkosh44/pg_duration)
+pg_duration is a PostgreSQL extension written by me (Joseph Koshakow) that adds a duration data type to PostgreSQL.
 <br/>
 <br/>
 
 # [<img src="/assets/img/noisepage-icon.svg" width="75"/>](https://github.com/cmu-db/postgres) [PG-NoisePage](https://github.com/cmu-db/postgres)
-PG-NoisePage is a fork of postgresql with the attempt to port NoisePage's self driving infrastructure over to Postgresql.
+PG-NoisePage is a fork of PostgreSQL with the attempt to port NoisePage's self driving infrastructure over to Postgresql.
 - [Implement functionality to take online copies of replica nodes in order to gather training data](https://github.com/cmu-db/postgres/pull/19)
 <br/>
 <br/>
