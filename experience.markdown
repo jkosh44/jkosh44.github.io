@@ -7,7 +7,7 @@ permalink: /experience/
 
 # [<img src="/assets/img/materialize_logo.png" width="75"/>](https://materialize.com/) Materialize
 #### **Software Engineer**
-*Feb 2021 - Current*
+*Feb 2021 - Feb 2025*
 - Built and maintained the SQL layer and control plane of an operational database to allow multiple concurrent users to access their data via PostgreSQL compatible SQL
 - Designed and implemented a role based access control sub-system which allowed enterprise users to define and configure granular access control rules for objects in the database
 - Identified, designed, and implemented the Strict Serializable and Strong Session Serializable isolation levels so that users could trade off query latency with isolation and consistency
