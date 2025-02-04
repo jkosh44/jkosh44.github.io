@@ -23,6 +23,11 @@ permalink: /oss/
 <br/>
 <br/>
 
+# [<img src="/assets/img/datafusion-logo.png" width="75"/>](https://datafusion.apache.org/) [Apache DataFusion](https://datafusion.apache.org/)
+- [Fix NULL input handling for array functions](https://github.com/apache/datafusion/pull/14289)
+<br/>
+<br/>
+
 # [pg_duration](https://github.com/jkosh44/pg_duration)
 pg_duration is a PostgreSQL extension written by me (Joseph Koshakow) that adds a duration data type to PostgreSQL.
 <br/>
