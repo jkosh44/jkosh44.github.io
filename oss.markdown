@@ -25,6 +25,7 @@ permalink: /oss/
 
 # [<img src="/assets/img/datafusion-logo.png" width="75"/>](https://datafusion.apache.org/) [Apache DataFusion](https://datafusion.apache.org/)
 - [Fix NULL input handling for array functions](https://github.com/apache/datafusion/pull/14289)
+- [Fix edge cases in `array_slice` function](https://github.com/apache/datafusion/pull/14489)
 <br/>
 <br/>
 
