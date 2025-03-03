@@ -30,21 +30,30 @@ SELECT timestamptz '1995-08-06 10:11:12 EST';
 SELECT date '1995-08-06';
 SELECT time '10:11:12';
 SELECT timetz '10:11:12 EST';
-</code></pre>
+</code>
+<code class="result">                          timestamp                         <br>-----------------------------------------------------------<br> Sun Aug 06 1995 10:11:12 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                        timestamptz                        <br>-----------------------------------------------------------<br> Sun Aug 06 1995 11:11:12 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                           date                           <br>-----------------------------------------------------------<br> Sat Aug 05 1995 20:00:00 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>   time   <br>----------<br> 10:11:12 <br>(1 row)<br><br>   timetz   <br>-------------<br> 10:11:12-05 <br>(1 row)<br></code>
+</pre>
 </div>
 <br>
 
 The final date/time type is `interval`. The PostgreSQL version 17 date/time docs [^4]  does not spend much time describing what an `interval` actually is and just calls it a “time interval”. The SQL standard [^5] spends even less time describing what they are and immediately dives into what are legal vs illegal `interval`s. The idea behind the `interval` SQL type is that instead of describing a moment in time, like `date`, `timestamp`, `time`, etc., it describes a span of time. To put it a different way, `intervals` represent the space between two moments in time. In PostgreSQL, it might look something like this:
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT interval '1 year 2 months 3 days 4 hours 5 seconds 6 milliseconds';</code></pre>
+<pre><code>=> </code><code class='query'>SELECT interval '1 year 2 months 3 days 4 hours 5 seconds 6 milliseconds';
+</code>
+<code class="result">             interval             <br>-----------------------------------<br> 1 year 2 mons 3 days 04:00:05.006 <br>(1 row)<br>
+</code>
+</pre>
 </div>
 <br>
 
 Or simply something like this:
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT interval '42 hours';</code></pre>
+<pre><code>=> </code><code class='query'>SELECT interval '42 hours';
+</code>
+<code class="result"> interval <br>----------<br> 42:00:00 <br>(1 row)<br></code>
+</pre>
 </div>
 <br>
 
@@ -54,7 +63,9 @@ Or simply something like this:
 <pre><code>=> </code><code class='query'>
 SELECT date '2020/05/07' + interval '5 days';
 SELECT timestamp '2020/05/07 11:11:11' - interval '12 minutes';
-</code></pre>
+</code>
+<code class="result">                         ?column?                         <br>-----------------------------------------------------------<br> Tue May 12 2020 00:00:00 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Thu May 07 2020 10:59:11 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br></code>
+</pre>
 </div>
 <br>
 
@@ -75,21 +86,28 @@ Any of the following units are valid in `interval`s:
 Now that you know what an `interval` is, what do you think the following will return? As a reminder, `=` is the equality operator in SQL instead of `==`. Take a second and guess before you look at the answer, you have a 50/50 chance. 
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT interval '1 year' = interval '365 days';</code></pre>
+<pre><code>=> </code><code class='query'>SELECT interval '1 year' = interval '365 days';</code>
+<code class="result"> ?column? <br>----------<br>    false <br>(1 row)<br></code>
+</pre>
 </div>
 <br>
 
 Ok, that might make sense, not every year has 365 days, some have 366 days. Depending on the definition of a year, we might even say that a year has 365.25 days. How about this one? This must surely return false. There's no sane argument to be made that a year is equivalent to 360 days.
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT interval '1 year' = interval '360 days';</code></pre>
+<pre><code>=> </code><code class='query'>SELECT interval '1 year' = interval '360 days';</code>
+<code class="result"> ?column? <br>----------<br>     true <br>(1 row)<br></code>
+</pre>
 </div>
 <br>
 
 Huh? Now that's strange. What could possibly be going on? Let's look at a different seemingly unrelated example.
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT interval '1 day' = interval '24 hours';</code></pre>
+<pre><code>=> </code><code class='query'>SELECT interval '1 day' = interval '24 hours';
+</code>
+<code class="result"> ?column? <br>----------<br>     true <br>(1 row)<br></code>
+</pre>
 </div>
 <br>
 
@@ -114,7 +132,10 @@ The problem is that `interval`s are trying to store three related but incomparab
 The second kind of data stored is days, days are the number of calendar days between two moments in time. For example, 
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT timestamp '2020/05/21 00:00:01' - timestamp '2020/05/20 00:00:01';</code></pre>
+<pre><code>=> </code><code class='query'>SELECT timestamp '2020/05/21 00:00:01' - timestamp '2020/05/20 00:00:01';
+</code>
+<code class="result"> ?column? <br>----------<br>    1 day <br>(1 row)<br></code>
+</pre>
 </div>
 <br>
 
@@ -134,10 +155,10 @@ typedef int64 TimeOffset;
  */
 typedef struct
 {
-	TimeOffset	time;			/* all time units other than days, months and
-								 * years */
-	int32		day;			/* days, after time for alignment */
-	int32		month;			/* months and years, after time for alignment */
+    TimeOffset	time;			/* all time units other than days, months and
+                                 * years */
+    int32		day;			/* days, after time for alignment */
+    int32		month;			/* months and years, after time for alignment */
 } Interval;
 ```
 
@@ -331,7 +352,9 @@ SELECT date '2025/01/31' + interval '1 month';
 SELECT date '2025/01/30' + interval '1 month';
 SELECT date '2025/01/29' + interval '1 month';
 SELECT date '2025/01/28' + interval '1 month';
-</code></pre>
+</code>
+<code class="result">                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br></code>
+</pre>
 </div>
 <br>
 
@@ -351,7 +374,7 @@ To help with this problem I created the pg_duration [^8] PostgreSQL extension. I
 
 [^1]: [https://pglite.dev/](https://pglite.dev/)
 
-[^2]: <a href="{{ "/static/2025-02-07-postgresql-intervals-are-confusing-hard-coded" | absolute_url }}">Hard coded version</a>
+[^2]: <a href="{{ "/blogs/2025-02-07-postgresql-intervals-are-confusing" | absolute_url }}?fake-pg">Hard coded version</a>
 
 [^3]: [https://www.postgresql.org/docs/current/datatype.html](https://www.postgresql.org/docs/current/datatype.html)
 
