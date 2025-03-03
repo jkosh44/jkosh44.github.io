@@ -25,7 +25,7 @@ for (const div of fake_pg_divs) {
 }
 
 const url_and_param = window.location.href.split("?");
-if (url_and_param.length === 2 && url_and_param[1] === "fake-pg") {
+if (url_and_param.length === 2 && url_and_param[1].includes("fake-pg")) {
   const pg_divs = document.querySelectorAll('div.pg');
   for (const div of pg_divs) {
     addFakePgQuery(div);
