@@ -21,6 +21,8 @@ published: true
 
 This blog post will explain the PostgreSQL built-in datatype `interval` and explain some of its flaws. The blog post also uses PGLite[^1] to execute PostgreSQL queries in the browser. If the PGLite code ever stops working or you find it annoying, then you can find an exact copy of this blog post with all the answers hard-coded[^2].
 
+## Interval Overview
+
 PostgreSQL has many built-in types that users can use for their data[^3]. A subset of these types are the date/time types[^4], which store information about dates and times.
 
 **`timestamp`** stores a point in time including both the date and the time.
@@ -98,6 +100,8 @@ Any of the following units are valid in `interval`s:
 - millisecond
 - microsecond
 
+## Interval Comparisons
+
 Now that you know what an `interval` is, what do you think the following will return? As a reminder, `=` is the equality operator in SQL instead of `==`. Take a second and guess before you look at the answer, you have a 50/50 chance. 
 
 <div class="pg">
@@ -135,6 +139,8 @@ SELECT timestamptz '2024/03/10 01:01:01 America/New_York' + interval '24 hours';
 Nope, they're off by one hour. If you live in the US, then you might remember March 10th 2024 as being the day when daylight savings started. In most parts of the US, March 10th 2024 was a day with only 23 hours.
 
 (Note: The results of the previous queries had to be hard-coded and were not executed with PGLite because they rely on your browser having the correct timezone and daylight savings information.)
+
+## Interval Internals
 
 The problem is that `interval`s are trying to store three related but incomparable types of information. The first is what some people refer to as a duration of time. These are well defined, precise measurements of elapsed time, usually measured in fractions of a second. Computers may notoriously have a difficult time accurately measuring durations, but in theory 1 seconds has the same length no matter where you are (for the purposes of this post lets ignore time dilation).
 
@@ -352,6 +358,8 @@ The SQL standard anticipated issues around interval comparisons and actually acc
 > Day-time intervals are mutually comparable only with other day-time intervals.
 
 They didn't account for daylight savings time causing days not to be directly comparable to time, but they did account for months not being comparable to days and time. I'm not sure why PostgreSQL decided to deviate from this and combine year-month intervals with day-time intervals. The answer is probably buried somewhere in documentation, code comments, commit messages, or mailing list threads.
+
+## Wrap Up
 
 Now that you're an `interval` expert, let's try and figure out what the following queries return.
 
