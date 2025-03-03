@@ -2,9 +2,6 @@ import {
   PGlite
 } from 'https://cdn.jsdelivr.net/npm/@electric-sql/pglite/dist/index.js'
 
-// Create a PGlite instance.
-const pg = new PGlite();
-
 async function executePgQuery(div) {
   // Grab the pre element.
   const pre = div.querySelector('pre');
@@ -111,6 +108,8 @@ async function executePgQuery(div) {
 }
 
 function addPgQuery(div) {
+  const result = div.querySelector('.result');
+  result.remove();
   const button = document.createElement('button');
   button.textContent = 'Run';
   button.addEventListener('click', () => {
@@ -120,7 +119,16 @@ function addPgQuery(div) {
   div.appendChild(button);
 }
 
-const pg_divs = document.querySelectorAll('div.pg');
-for (const div of pg_divs) {
-  addPgQuery(div);
+let pg = null;
+
+const url_and_param = window.location.href.split("?");
+if (url_and_param.length !== 2 || url_and_param[1].includes("fake-pg")) {
+    // Create a PGlite instance.
+    pg = new PGlite();
+
+    const pg_divs = document.querySelectorAll('div.pg');
+    for (const div of pg_divs) {
+        addPgQuery(div);
+    }
+
 }

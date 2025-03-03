@@ -19,32 +19,58 @@ published: true
 >
 </script>
 
-This blog post will explain the PostgreSQL built-in datatype `interval` and explain some of its flaws. The blog post also uses PGLite [^1] to execute PostgreSQL queries in the browser. If the PGLite code ever stops working or you find it annoying, then you can find an exact copy of this blog post with all the answers hard-coded [^2].
+This blog post will explain the PostgreSQL built-in datatype `interval` and explain some of its flaws. The blog post also uses PGLite[^1] to execute PostgreSQL queries in the browser. If the PGLite code ever stops working or you find it annoying, then you can find an exact copy of this blog post with all the answers hard-coded[^2].
 
-PostgreSQL has many built-in types that users can use for their data [^3]. A subset of these types are the date/time types [^4], which store information about dates and times. `timestamp` stores a point in time including both the date and the time, `timestamptz` is like `timestamp` but with a timezone. `date` stores a moment in time without the time of day. `time` just stores the time of day, and `timetz` is like `time` but with a timezone. Here are examples of all of them.
+PostgreSQL has many built-in types that users can use for their data[^3]. A subset of these types are the date/time types[^4], which store information about dates and times.
 
+**`timestamp`** stores a point in time including both the date and the time.
 <div class="pg">
-<pre><code>=> </code><code class='query'>
-SELECT timestamp '1995-08-06 10:11:12';
-SELECT timestamptz '1995-08-06 10:11:12 EST';
-SELECT date '1995-08-06';
-SELECT time '10:11:12';
-SELECT timetz '10:11:12 EST';
-</code></pre>
+<pre><code>=> </code><code class='query'>SELECT timestamp '1995-08-06 10:11:12';</code>
+<code class="result">                          timestamp                         <br>-----------------------------------------------------------<br> Sun Aug 06 1995 10:11:12 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br></code></pre>
 </div>
 <br>
 
-The final date/time type is `interval`. The PostgreSQL version 17 date/time docs [^4]  does not spend much time describing what an `interval` actually is and just calls it a “time interval”. The SQL standard [^5] spends even less time describing what they are and immediately dives into what are legal vs illegal `interval`s. The idea behind the `interval` SQL type is that instead of describing a moment in time, like `date`, `timestamp`, `time`, etc., it describes a span of time. To put it a different way, `intervals` represent the space between two moments in time. In PostgreSQL, it might look something like this:
+**`timestamptz`** is like `timestamp` but with a timezone.
+<div class="pg">
+<pre><code>=> </code><code class='query'>SELECT timestamptz '1995-08-06 10:11:12 EST';</code>
+<code class="result">                        timestamptz                        <br>-----------------------------------------------------------<br> Sun Aug 06 1995 11:11:12 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br></code></pre>
+</div>
+<br>
+
+**`date`** stores a moment in time without the time of day.
+<div class="pg">
+<pre><code>=> </code><code class='query'>SELECT date '1995-08-06';</code>
+<code class="result">                           date                           <br>-----------------------------------------------------------<br> Sat Aug 05 1995 20:00:00 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br></code></pre>
+</div>
+<br>
+
+**`time`** just stores the time of day.
+<div class="pg">
+<pre><code>=> </code><code class='query'>SELECT time '10:11:12';</code>
+<code class="result">   time   <br>----------<br> 10:11:12 <br>(1 row)<br></code></pre>
+</div>
+<br>
+
+**`timetz`** is like `time` but with a timezone.
+<div class="pg">
+<pre><code>=> </code><code class='query'>SELECT timetz '10:11:12 EST';</code>
+<code class="result">   timetz   <br>-------------<br> 10:11:12-05 <br>(1 row)<br></code></pre>
+</div>
+<br>
+
+The final date/time type is `interval`. The PostgreSQL version 17 date/time docs[^4]  does not spend much time describing what an `interval` actually is and just calls it a “time interval”. The SQL standard[^5] spends even less time describing what they are and immediately dives into what are legal vs illegal `interval`s. The idea behind the `interval` SQL type is that instead of describing a moment in time, like `date`, `timestamp`, `time`, etc., it describes a span of time. To put it a different way, `intervals` represent the space between two moments in time. In PostgreSQL, it might look something like this:
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT interval '1 year 2 months 3 days 4 hours 5 seconds 6 milliseconds';</code></pre>
+<pre><code>=> </code><code class='query'>SELECT interval '1 year 2 months 3 days 4 hours 5 seconds 6 milliseconds';</code>
+<code class="result">             interval             <br>-----------------------------------<br> 1 year 2 mons 3 days 04:00:05.006 <br>(1 row)<br></code></pre>
 </div>
 <br>
 
 Or simply something like this:
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT interval '42 hours';</code></pre>
+<pre><code>=> </code><code class='query'>SELECT interval '42 hours';</code>
+<code class="result"> interval <br>----------<br> 42:00:00 <br>(1 row)<br></code></pre>
 </div>
 <br>
 
@@ -53,8 +79,8 @@ Or simply something like this:
 <div class="pg">
 <pre><code>=> </code><code class='query'>
 SELECT date '2020/05/07' + interval '5 days';
-SELECT timestamp '2020/05/07 11:11:11' - interval '12 minutes';
-</code></pre>
+SELECT timestamp '2020/05/07 11:11:11' - interval '12 minutes';</code>
+<code class="result">                         ?column?                         <br>-----------------------------------------------------------<br> Tue May 12 2020 00:00:00 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Thu May 07 2020 10:59:11 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br></code></pre>
 </div>
 <br>
 
@@ -75,21 +101,24 @@ Any of the following units are valid in `interval`s:
 Now that you know what an `interval` is, what do you think the following will return? As a reminder, `=` is the equality operator in SQL instead of `==`. Take a second and guess before you look at the answer, you have a 50/50 chance. 
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT interval '1 year' = interval '365 days';</code></pre>
+<pre><code>=> </code><code class='query'>SELECT interval '1 year' = interval '365 days';</code>
+<code class="result"> ?column? <br>----------<br>    false <br>(1 row)<br></code></pre>
 </div>
 <br>
 
 Ok, that might make sense, not every year has 365 days, some have 366 days. Depending on the definition of a year, we might even say that a year has 365.25 days. How about this one? This must surely return false. There's no sane argument to be made that a year is equivalent to 360 days.
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT interval '1 year' = interval '360 days';</code></pre>
+<pre><code>=> </code><code class='query'>SELECT interval '1 year' = interval '360 days';</code>
+<code class="result"> ?column? <br>----------<br>     true <br>(1 row)<br></code></pre>
 </div>
 <br>
 
 Huh? Now that's strange. What could possibly be going on? Let's look at a different seemingly unrelated example.
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT interval '1 day' = interval '24 hours';</code></pre>
+<pre><code>=> </code><code class='query'>SELECT interval '1 day' = interval '24 hours';</code>
+<code class="result"> ?column? <br>----------<br>     true <br>(1 row)<br></code></pre>
 </div>
 <br>
 
@@ -98,10 +127,8 @@ That's not terribly surprising, if we ignore leap seconds most days have 24 hour
 <div class="fake-pg">
 <pre><code>=> </code><code class='query'>
 SELECT timestamptz '2024/03/10 01:01:01 America/New_York' + interval '1 day';
-SELECT timestamptz '2024/03/10 01:01:01 America/New_York' + interval '24 hours';
-</code>
-<code class="result">                         ?column?                         <br>-----------------------------------------------------------<br> Mon Mar 11 2024 01:01:01 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Mon Mar 11 2024 02:01:01 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br></code>
-</pre>
+SELECT timestamptz '2024/03/10 01:01:01 America/New_York' + interval '24 hours';</code>
+<code class="result">                         ?column?                         <br>-----------------------------------------------------------<br> Mon Mar 11 2024 01:01:01 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Mon Mar 11 2024 02:01:01 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br></code></pre>
 </div>
 <br>
 
@@ -114,7 +141,8 @@ The problem is that `interval`s are trying to store three related but incomparab
 The second kind of data stored is days, days are the number of calendar days between two moments in time. For example, 
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT timestamp '2020/05/21 00:00:01' - timestamp '2020/05/20 00:00:01';</code></pre>
+<pre><code>=> </code><code class='query'>SELECT timestamp '2020/05/21 00:00:01' - timestamp '2020/05/20 00:00:01';</code>
+<code class="result"> ?column? <br>----------<br>    1 day <br>(1 row)<br></code></pre>
 </div>
 <br>
 
@@ -124,7 +152,7 @@ The third kind of data stored is months, months are the number of calendar month
 
 All other units can be described as multiples of one of these three types of data. Years are 12 months, weeks are 7 days, minutes are 60 seconds, etc.
 
-If we look at how PostgreSQL stores `interval` values internally [^6] we can see that it matches this split.
+If we look at how PostgreSQL stores `interval` values internally[^6] we can see that it matches this split.
 
 ```C
 typedef int64 TimeOffset;
@@ -134,10 +162,10 @@ typedef int64 TimeOffset;
  */
 typedef struct
 {
-	TimeOffset	time;			/* all time units other than days, months and
-								 * years */
-	int32		day;			/* days, after time for alignment */
-	int32		month;			/* months and years, after time for alignment */
+    TimeOffset	time;			/* all time units other than days, months and
+                                 * years */
+    int32		day;			/* days, after time for alignment */
+    int32		month;			/* months and years, after time for alignment */
 } Interval;
 ```
 
@@ -268,6 +296,8 @@ assert!(!(i1 > i2));
 assert!(!(i1 >= i2));
 ```
 
+Note: If you're not familiair with Rust, `assert!( exp )` is a macro that asserts `exp` is `true`. All of the `!`s can get confusing, but `assert!( !(exp) )` asserts that `exp` is `false`. `assert_ne!( exp1, exp2 )` is a macro that asserts that `exp1` is not equal to `exp2`.
+
 Similarly, if we compare 1 day to 24 hours, we always get `false`.
 
 ```Rust
@@ -311,9 +341,9 @@ assert!(i1 >= i2);
 
 The Rust code is making the simplification here that `d` days is equal to `d` days and `m` months are equal to `m` months. That may not necessarily be true, for example the length of January and February is not equal to the length of March and April. 
 
-Unlike the Rust code, PostgreSQL tries to treat `interval`s as a totally ordered type. When comparing two `interval`s, PostgreSQL converts each `interval` to a single 128 bit integer of microseconds and then compares those two integers. The set of 128 bit integers is totally ordered, so the comparison can always return an answer. Each month is converted to 30 days, each day is converted to 24 hours, and each hour is converted to microseconds as expected [^7]. This explains the strange result of 360 days equaling 1 year. 1 year -> 12 months -> 30 * 12 days -> 360 days.
+Unlike the Rust code, PostgreSQL tries to treat `interval`s as a totally ordered type. When comparing two `interval`s, PostgreSQL converts each `interval` to a single 128 bit integer of microseconds and then compares those two integers. The set of 128 bit integers is totally ordered, so the comparison can always return an answer. Each month is converted to 30 days, each day is converted to 24 hours, and each hour is converted to microseconds as expected[^7]. This explains the strange result of 360 days equaling 1 year. 1 year -> 12 months -> 30 * 12 days -> 360 days.
 
-The SQL standard anticipated issues around interval comparisons and actually accounted for it [^5].
+The SQL standard anticipated issues around interval comparisons and actually accounted for it[^5].
 
 > There are two classes of intervals. One class, called year-month intervals, has an express or implied datetime precision that includes no fields other than YEAR and MONTH, though not both are required. The other class, called day-time intervals, has an express or implied interval precision that can include any fields other than YEAR or MONTH.
 >
@@ -330,8 +360,8 @@ Now that you're an `interval` expert, let's try and figure out what the followin
 SELECT date '2025/01/31' + interval '1 month';
 SELECT date '2025/01/30' + interval '1 month';
 SELECT date '2025/01/29' + interval '1 month';
-SELECT date '2025/01/28' + interval '1 month';
-</code></pre>
+SELECT date '2025/01/28' + interval '1 month';</code>
+<code class="result">                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br></code></pre>
 </div>
 <br>
 
@@ -345,13 +375,13 @@ If you want to accurately compare two `interval`s you have a couple of options. 
 
 Of course you could always roll your own solution using integers, but then you lose out on useful type information and builtin functions and operators.
 
-To help with this problem I created the pg_duration [^8] PostgreSQL extension. It creates a new type, called `duration`, that behaves the same as the `interval` type, but it doesn't have the days and months field. So it's totally ordered and only takes up 64 bits per `duration`. You can read more about it in the project `README`.
+To help with this problem I created the pg_duration[^8] PostgreSQL extension. It creates a new type, called `duration`, that behaves the same as the `interval` type, but it doesn't have the days and months field. So it's totally ordered and only takes up 64 bits per `duration`. You can read more about it in the project `README`.
 
 ---
 
 [^1]: [https://pglite.dev/](https://pglite.dev/)
 
-[^2]: <a href="{{ "/static/2025-02-07-postgresql-intervals-are-confusing-hard-coded" | absolute_url }}">Hard coded version</a>
+[^2]: <a href="{{ "/blogs/2025-02-07-postgresql-intervals-are-confusing" | relative_url }}?fake-pg">Hard coded version</a>
 
 [^3]: [https://www.postgresql.org/docs/current/datatype.html](https://www.postgresql.org/docs/current/datatype.html)
 
