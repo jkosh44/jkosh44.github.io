@@ -29,31 +29,24 @@ SELECT timestamp '1995-08-06 10:11:12';
 SELECT timestamptz '1995-08-06 10:11:12 EST';
 SELECT date '1995-08-06';
 SELECT time '10:11:12';
-SELECT timetz '10:11:12 EST';
-</code>
-<code class="result">                          timestamp                         <br>-----------------------------------------------------------<br> Sun Aug 06 1995 10:11:12 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                        timestamptz                        <br>-----------------------------------------------------------<br> Sun Aug 06 1995 11:11:12 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                           date                           <br>-----------------------------------------------------------<br> Sat Aug 05 1995 20:00:00 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>   time   <br>----------<br> 10:11:12 <br>(1 row)<br><br>   timetz   <br>-------------<br> 10:11:12-05 <br>(1 row)<br></code>
-</pre>
+SELECT timetz '10:11:12 EST';</code>
+<code class="result">                          timestamp                         <br>-----------------------------------------------------------<br> Sun Aug 06 1995 10:11:12 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                        timestamptz                        <br>-----------------------------------------------------------<br> Sun Aug 06 1995 11:11:12 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                           date                           <br>-----------------------------------------------------------<br> Sat Aug 05 1995 20:00:00 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>   time   <br>----------<br> 10:11:12 <br>(1 row)<br><br>   timetz   <br>-------------<br> 10:11:12-05 <br>(1 row)<br></code></pre>
 </div>
 <br>
 
 The final date/time type is `interval`. The PostgreSQL version 17 date/time docs [^4]  does not spend much time describing what an `interval` actually is and just calls it a “time interval”. The SQL standard [^5] spends even less time describing what they are and immediately dives into what are legal vs illegal `interval`s. The idea behind the `interval` SQL type is that instead of describing a moment in time, like `date`, `timestamp`, `time`, etc., it describes a span of time. To put it a different way, `intervals` represent the space between two moments in time. In PostgreSQL, it might look something like this:
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT interval '1 year 2 months 3 days 4 hours 5 seconds 6 milliseconds';
-</code>
-<code class="result">             interval             <br>-----------------------------------<br> 1 year 2 mons 3 days 04:00:05.006 <br>(1 row)<br>
-</code>
-</pre>
+<pre><code>=> </code><code class='query'>SELECT interval '1 year 2 months 3 days 4 hours 5 seconds 6 milliseconds';</code>
+<code class="result">             interval             <br>-----------------------------------<br> 1 year 2 mons 3 days 04:00:05.006 <br>(1 row)<br></code></pre>
 </div>
 <br>
 
 Or simply something like this:
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT interval '42 hours';
-</code>
-<code class="result"> interval <br>----------<br> 42:00:00 <br>(1 row)<br></code>
-</pre>
+<pre><code>=> </code><code class='query'>SELECT interval '42 hours';</code>
+<code class="result"> interval <br>----------<br> 42:00:00 <br>(1 row)<br></code></pre>
 </div>
 <br>
 
@@ -62,10 +55,8 @@ Or simply something like this:
 <div class="pg">
 <pre><code>=> </code><code class='query'>
 SELECT date '2020/05/07' + interval '5 days';
-SELECT timestamp '2020/05/07 11:11:11' - interval '12 minutes';
-</code>
-<code class="result">                         ?column?                         <br>-----------------------------------------------------------<br> Tue May 12 2020 00:00:00 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Thu May 07 2020 10:59:11 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br></code>
-</pre>
+SELECT timestamp '2020/05/07 11:11:11' - interval '12 minutes';</code>
+<code class="result">                         ?column?                         <br>-----------------------------------------------------------<br> Tue May 12 2020 00:00:00 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Thu May 07 2020 10:59:11 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br></code></pre>
 </div>
 <br>
 
@@ -87,8 +78,7 @@ Now that you know what an `interval` is, what do you think the following will re
 
 <div class="pg">
 <pre><code>=> </code><code class='query'>SELECT interval '1 year' = interval '365 days';</code>
-<code class="result"> ?column? <br>----------<br>    false <br>(1 row)<br></code>
-</pre>
+<code class="result"> ?column? <br>----------<br>    false <br>(1 row)<br></code></pre>
 </div>
 <br>
 
@@ -96,18 +86,15 @@ Ok, that might make sense, not every year has 365 days, some have 366 days. Depe
 
 <div class="pg">
 <pre><code>=> </code><code class='query'>SELECT interval '1 year' = interval '360 days';</code>
-<code class="result"> ?column? <br>----------<br>     true <br>(1 row)<br></code>
-</pre>
+<code class="result"> ?column? <br>----------<br>     true <br>(1 row)<br></code></pre>
 </div>
 <br>
 
 Huh? Now that's strange. What could possibly be going on? Let's look at a different seemingly unrelated example.
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT interval '1 day' = interval '24 hours';
-</code>
-<code class="result"> ?column? <br>----------<br>     true <br>(1 row)<br></code>
-</pre>
+<pre><code>=> </code><code class='query'>SELECT interval '1 day' = interval '24 hours';</code>
+<code class="result"> ?column? <br>----------<br>     true <br>(1 row)<br></code></pre>
 </div>
 <br>
 
@@ -116,10 +103,8 @@ That's not terribly surprising, if we ignore leap seconds most days have 24 hour
 <div class="fake-pg">
 <pre><code>=> </code><code class='query'>
 SELECT timestamptz '2024/03/10 01:01:01 America/New_York' + interval '1 day';
-SELECT timestamptz '2024/03/10 01:01:01 America/New_York' + interval '24 hours';
-</code>
-<code class="result">                         ?column?                         <br>-----------------------------------------------------------<br> Mon Mar 11 2024 01:01:01 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Mon Mar 11 2024 02:01:01 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br></code>
-</pre>
+SELECT timestamptz '2024/03/10 01:01:01 America/New_York' + interval '24 hours';</code>
+<code class="result">                         ?column?                         <br>-----------------------------------------------------------<br> Mon Mar 11 2024 01:01:01 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Mon Mar 11 2024 02:01:01 GMT-0400 (Eastern Daylight Time) <br>(1 row)<br></code></pre>
 </div>
 <br>
 
@@ -132,10 +117,8 @@ The problem is that `interval`s are trying to store three related but incomparab
 The second kind of data stored is days, days are the number of calendar days between two moments in time. For example, 
 
 <div class="pg">
-<pre><code>=> </code><code class='query'>SELECT timestamp '2020/05/21 00:00:01' - timestamp '2020/05/20 00:00:01';
-</code>
-<code class="result"> ?column? <br>----------<br>    1 day <br>(1 row)<br></code>
-</pre>
+<pre><code>=> </code><code class='query'>SELECT timestamp '2020/05/21 00:00:01' - timestamp '2020/05/20 00:00:01';</code>
+<code class="result"> ?column? <br>----------<br>    1 day <br>(1 row)<br></code></pre>
 </div>
 <br>
 
@@ -351,10 +334,8 @@ Now that you're an `interval` expert, let's try and figure out what the followin
 SELECT date '2025/01/31' + interval '1 month';
 SELECT date '2025/01/30' + interval '1 month';
 SELECT date '2025/01/29' + interval '1 month';
-SELECT date '2025/01/28' + interval '1 month';
-</code>
-<code class="result">                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br></code>
-</pre>
+SELECT date '2025/01/28' + interval '1 month';</code>
+<code class="result">                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br><br>                         ?column?                         <br>-----------------------------------------------------------<br> Fri Feb 28 2025 00:00:00 GMT-0500 (Eastern Standard Time) <br>(1 row)<br></code></pre>
 </div>
 <br>
 

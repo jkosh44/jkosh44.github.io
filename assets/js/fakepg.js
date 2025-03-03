@@ -1,7 +1,9 @@
 async function executeFakePgQuery(div, result) {
   // Grab the pre element.
   const pre = div.querySelector('pre');
-  // Re-attach the result.
+  // Re-attach some whitespace and the result.
+  pre.appendChild(document.createElement('br'));
+  pre.appendChild(document.createElement('br'));
   pre.appendChild(result);
 }
 
