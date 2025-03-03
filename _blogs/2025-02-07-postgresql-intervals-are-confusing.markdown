@@ -296,6 +296,8 @@ assert!(!(i1 > i2));
 assert!(!(i1 >= i2));
 ```
 
+Note: If you're not familiair with Rust, `assert!( exp )` is a macro that asserts `exp` is `true`. All of the `!`s can get confusing, but `assert!( !(exp) )` asserts that `exp` is `false`. `assert_ne!( exp1, exp2 )` is a macro that asserts that `exp1` is not equal to `exp2`.
+
 Similarly, if we compare 1 day to 24 hours, we always get `false`.
 
 ```Rust
