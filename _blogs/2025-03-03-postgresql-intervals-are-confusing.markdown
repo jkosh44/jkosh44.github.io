@@ -118,7 +118,7 @@ Ok, that might make sense, not every year has 365 days, some have 366 days. Depe
 </div>
 <br>
 
-Huh? Now that's strange. What could possibly be going on? Let's look at a different seemingly unrelated example.
+Huh? Now that is strange. What could possibly be going on? Let's look at a different seemingly unrelated example.
 
 <div class="pg">
 <pre><code>=> </code><code class='query'>SELECT interval '1 day' = interval '24 hours';</code>
@@ -228,9 +228,9 @@ This explains the strange result of 360 days equaling 1 year. 1 year is the same
 
 However, that code is *only* used to compare `intervals`, not to perform arithmatic with `interval`s. When adding/subtracting an `interval` to/from a `timestamp` we follow these rules[^8]:
 
-- The months part of the `interval` increments/decrements the calendar month of the `timestamp`.
-- The days part of the `interval` increments/decrements the calendar day of the `timestamp`.
-- The microseconds part of the `interval` increments/decrements the time portion of the `timestamp`.
+1. The months part of the `interval` increments/decrements the calendar month of the `timestamp`.
+2. The days part of the `interval` increments/decrements the calendar day of the `timestamp`.
+3. The microseconds part of the `interval` increments/decrements the time portion of the `timestamp`.
 
 Incrementing/decrementing a specific unit in a `timestamp` can cause one of the larger units to change as expected. For example, adding one day to Januray 31st will also cause the month to increase to February.
 
@@ -286,10 +286,10 @@ To help with this problem I created the pg_duration[^9] PostgreSQL extension. It
 
 [^5]: The SQL standard is not available for free, you have to purchase it from ANSI, [https://webstore.ansi.org/standards/iso/isoiec90752023-2502169](https://webstore.ansi.org/standards/iso/isoiec90752023-2502169), or you could just take my word for it. 
 
-[^6]: [https://github.com/postgres/postgres/blob/ecb8226af63dc8f1c0859977102764704368693b/src/include/datatype/timestamp.h#L18-L53](https://github.com/postgres/postgres/blob/ecb8226af63dc8f1c0859977102764704368693b/src/include/datatype/timestamp.h#L18-L53)
+[^6]: [Interval struct](https://github.com/postgres/postgres/blob/ecb8226af63dc8f1c0859977102764704368693b/src/include/datatype/timestamp.h#L18-L53)
 
-[^7]: [https://github.com/postgres/postgres/blob/15a79c73111f0c9738ee81b796f7de5bfeb3aedc/src/backend/utils/adt/timestamp.c#L2483-L2522](https://github.com/postgres/postgres/blob/15a79c73111f0c9738ee81b796f7de5bfeb3aedc/src/backend/utils/adt/timestamp.c#L2483-L2522)
+[^7]: [Interval comparison code](https://github.com/postgres/postgres/blob/15a79c73111f0c9738ee81b796f7de5bfeb3aedc/src/backend/utils/adt/timestamp.c#L2483-L2522)
 
-[^8]: [https://github.com/postgres/postgres/blob/15a79c73111f0c9738ee81b796f7de5bfeb3aedc/src/backend/utils/adt/timestamp.c#L3049-L3188](https://github.com/postgres/postgres/blob/15a79c73111f0c9738ee81b796f7de5bfeb3aedc/src/backend/utils/adt/timestamp.c#L3049-L3188)
+[^8]: [Interval arithmetic code](https://github.com/postgres/postgres/blob/15a79c73111f0c9738ee81b796f7de5bfeb3aedc/src/backend/utils/adt/timestamp.c#L3049-L3188)
 
 [^9]: [https://github.com/jkosh44/pg_duration](https://github.com/jkosh44/pg_duration)
