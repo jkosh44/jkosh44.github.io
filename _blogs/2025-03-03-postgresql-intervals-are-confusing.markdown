@@ -97,8 +97,8 @@ Any of the following units are valid in `interval`s:
 - Hour
 - Minute
 - Second
-- millisecond
-- microsecond
+- Millisecond
+- Microsecond
 
 ## Interval Comparisons
 
