@@ -19,11 +19,11 @@ published: true
 >
 </script>
 
-This blog post will explain the PostgreSQL built-in datatype `interval` and explain some of its flaws. The blog post also uses PGLite[^1] to execute PostgreSQL queries in the browser. If the PGLite code ever stops working or you find it annoying, then you can find an exact copy of this blog post with all the answers hard-coded[^2].
+This blog post will explain the PostgreSQL built-in datatype `interval` and explain some of its flaws. The blog post also uses PGLite[^1] to execute PostgreSQL queries in the browser. If the PGLite code ever stops working or you find it annoying, then you can find <a href="{{ "/blogs/2025-03-03-postgresql-intervals-are-confusing" | relative_url }}?fake-pg">an exact copy of this blog post with all the answers hard-coded</a>.
 
 ## Interval Overview
 
-PostgreSQL has many built-in types that users can use for their data[^3]. A subset of these types are the date/time types[^4], which store information about dates and times.
+PostgreSQL has many built-in types that users can use for their data[^2]. A subset of these types are the date/time types[^3], which store information about dates and times.
 
 **`timestamp`** stores a point in time including both the date and the time.
 <div class="pg">
@@ -60,7 +60,7 @@ PostgreSQL has many built-in types that users can use for their data[^3]. A subs
 </div>
 <br>
 
-The final date/time type is `interval`. The PostgreSQL version 17 date/time docs[^4]  does not spend much time describing what an `interval` actually is and just calls it a “time interval”. The SQL standard[^5] spends even less time describing what they are and immediately dives into what are legal vs illegal `interval`s. The idea behind the `interval` SQL type is that instead of describing a moment in time, like `date`, `timestamp`, `time`, etc., it describes a span of time. To put it a different way, `intervals` represent the space between two moments in time. In PostgreSQL, it might look something like this:
+The final date/time type is `interval`. The PostgreSQL version 17 date/time docs[^3]  does not spend much time describing what an `interval` actually is and just calls it a “time interval”. The SQL standard[^4] spends even less time describing what they are and immediately dives into what are legal vs illegal `interval`s. The idea behind the `interval` SQL type is that instead of describing a moment in time, like `date`, `timestamp`, `time`, etc., it describes a span of time. To put it a different way, `intervals` represent the space between two moments in time. In PostgreSQL, it might look something like this:
 
 <div class="pg">
 <pre><code>=> </code><code class='query'>SELECT interval '1 year 2 months 3 days 4 hours 5 seconds 6 milliseconds';</code>
@@ -136,9 +136,7 @@ SELECT timestamptz '2024/03/10 01:01:01 America/New_York' + interval '24 hours';
 </div>
 <br>
 
-Nope, they're off by one hour. If you live in the US, then you might remember March 10th 2024 as being the day when daylight savings started. In most parts of the US, March 10th 2024 was a day with only 23 hours.
-
-(Note: The results of the previous queries had to be hard-coded and were not executed with PGLite because they rely on your browser having the correct timezone and daylight savings information.)
+Nope, they're off by one hour[^5]. If you live in the US, then you might remember March 10th 2024 as being the day when daylight savings started. In most parts of the US, March 10th 2024 was a day with only 23 hours.
 
 ## Interval Internals
 
@@ -234,11 +232,9 @@ However, that code is *only* used to compare `intervals`, not to perform arithma
 
 Incrementing/decrementing a specific unit in a `timestamp` can cause one of the larger units to change as expected. For example, adding one day to Januray 31st will also cause the month to increase to February.
 
-(Note: The arithmetic code is a harder to understand and involves more helper methods and structs so it's not included in this post. It is linked in the footnotes if you're interested.)
-
 This explains why adding 1 day is not always the same as adding 24 hours. If you add 1 day you may be adding 23, 24, or 25 hours depending on the specific day.
 
-The SQL standard anticipated issues around interval comparisons and actually accounted for it[^5].
+The SQL standard anticipated issues around interval comparisons and actually accounted for it[^4].
 
 > There are two classes of intervals. One class, called year-month intervals, has an express or implied datetime precision that includes no fields other than YEAR and MONTH, though not both are required. The other class, called day-time intervals, has an express or implied interval precision that can include any fields other than YEAR or MONTH.
 >
@@ -278,18 +274,18 @@ To help with this problem I created the pg_duration[^9] PostgreSQL extension. It
 
 [^1]: [https://pglite.dev/](https://pglite.dev/)
 
-[^2]: <a href="{{ "/blogs/2025-02-07-postgresql-intervals-are-confusing" | relative_url }}?fake-pg">Hard coded version</a>
+[^2]: [https://www.postgresql.org/docs/17/datatype.html](https://www.postgresql.org/docs/17/datatype.html)
 
-[^3]: [https://www.postgresql.org/docs/current/datatype.html](https://www.postgresql.org/docs/current/datatype.html)
+[^3]: [https://www.postgresql.org/docs/17/datatype-datetime.html](https://www.postgresql.org/docs/17/datatype-datetime.html)
 
-[^4]: [https://www.postgresql.org/docs/17/datatype-datetime.html](https://www.postgresql.org/docs/17/datatype-datetime.html)
+[^4]: The SQL standard is not available for free, you have to purchase it from ANSI, [https://webstore.ansi.org/standards/iso/isoiec90752023-2502169](https://webstore.ansi.org/standards/iso/isoiec90752023-2502169), or you could just take my word for it. 
 
-[^5]: The SQL standard is not available for free, you have to purchase it from ANSI, [https://webstore.ansi.org/standards/iso/isoiec90752023-2502169](https://webstore.ansi.org/standards/iso/isoiec90752023-2502169), or you could just take my word for it. 
+[^5]: The results of these queries had to be hard-coded and were not executed with PGLite because they rely on your browser having the correct timezone and daylight savings information.
 
 [^6]: [Interval struct](https://github.com/postgres/postgres/blob/ecb8226af63dc8f1c0859977102764704368693b/src/include/datatype/timestamp.h#L18-L53)
 
 [^7]: [Interval comparison code](https://github.com/postgres/postgres/blob/15a79c73111f0c9738ee81b796f7de5bfeb3aedc/src/backend/utils/adt/timestamp.c#L2483-L2522)
 
-[^8]: [Interval arithmetic code](https://github.com/postgres/postgres/blob/15a79c73111f0c9738ee81b796f7de5bfeb3aedc/src/backend/utils/adt/timestamp.c#L3049-L3188)
+[^8]: The arithmetic code is a harder to understand and involves more helper methods and structs so it's not included in this post. For those that are interested, it can be found [here](https://github.com/postgres/postgres/blob/15a79c73111f0c9738ee81b796f7de5bfeb3aedc/src/backend/utils/adt/timestamp.c#L3049-L3188)
 
 [^9]: [https://github.com/jkosh44/pg_duration](https://github.com/jkosh44/pg_duration)
