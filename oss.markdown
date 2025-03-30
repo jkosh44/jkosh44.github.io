@@ -36,6 +36,11 @@ pg_duration is a PostgreSQL extension written by me (Joseph Koshakow) that adds 
 <br/>
 <br/>
 
+# [<img src="/assets/img/arrow-logo.svg" width="75"/>](https://crates.io/crates/object_store) [Apache Arrow Object Store](https://crates.io/crates/object_store)
+  - [Fix empty multipart uploads to GCP](https://github.com/apache/datafusion/pull/14532)
+<br/>
+<br/>
+
 # [<img src="/assets/img/noisepage-icon.svg" width="75"/>](https://github.com/cmu-db/postgres) [PG-NoisePage](https://github.com/cmu-db/postgres)
 PG-NoisePage is a fork of PostgreSQL with the attempt to port NoisePage's self driving infrastructure over to Postgresql.
 - [Implement functionality to take online copies of replica nodes in order to gather training data](https://github.com/cmu-db/postgres/pull/19)
