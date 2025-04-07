@@ -3,8 +3,8 @@ layout: page
 title: Writing
 permalink: /writing/
 ---
-
-{% for post in site.blogs %}
+{% assign blogs = site.blogs | reverse %}
+{% for post in blogs %}
   <h2>
     <a href="{{ post.url }}">{{ post.title }}</a><br>
   </h2>
