@@ -114,7 +114,7 @@ async fn some_task() {
 }
 ```
 
-The compiler will convert this into something like the following (simplified) state machine:
+The compiler will convert this into something like the following simplified state machine (Note, this isn't exactly what the state machine will look like, but works as good mental model):
 
 ```rust
 enum State {
@@ -211,6 +211,22 @@ It is possible to [run two independent runtimes](https://play.rust-lang.org/?ver
 However, from a conceptual view, it’s again not clear (to me) why someone would want this. Fundamentally, the runtime’s job is one of resource management. Given a set of physical resources and a set of user defined work, how can we most efficiently schedule this work onto the resources. The kernel makes a good scheduler because it has a global view of all system resources and all processes running on the system. It can make very informed decisions with this global view. The Rust async runtime knows about the system resources and the tasks run in the context of that runtime. As you create more runtimes, each runtime has less of a global view of the application and can make less informed decisions. Additionally, you are now more reliant on the kernel to schedule each runtime’s threads. This would be similar to a Java application creating multiple JVMs and running different parts of the application on different JVMs.
 
 So, is this ever desirable? It turns out that I do not know the answer to this question. Maybe it is sometimes? Potentially it provides some form of isolation between runtimes. Potentially it allows you to separate tasks by priority? If a reader of this knows the answer, then please let me know. However, I do think it’s clear that multiple runtimes shouldn’t be used without a good reason, because it does introduce inefficiencies into your application.
+
+## Runtime Overhead
+
+One question someone might ask is, does a runtime add any overhead? Strictly speaking yes, when using a runtime your spending cycles running code that isn't your application's code, which is going to add some amount of latency. Then why would anyone use a runtime? Like most things in programming it's about tradeoffs.
+
+### Garbage Collection
+
+Garbage collecting runtimes reduce memory related bugs, simplify programs, and increase developer velocity. If you're writing an application that isn't concerned with low latencies, then this might be a worthwhile tradeoff. Some of these runtimes are infamous for "stop the world" GC pauses, where the application is completely halted for some amount of time to clean up unreachable memory. This can absolutely destroy an applications performance.
+
+### Portability
+
+Some runtimes can help with application portability. With fully compiled languages, like C, C++, Rust, and Go, you need to re-compile your program for different architectures. Interpreted languages like, Java and Python, generally only need to be compiled once or not at all. As long as an architecture has an implementation of the runtime, your program will run there. This used to be one of Java's big selling points, ["Write once, run anywhere"](https://en.wikipedia.org/wiki/Write_once,_run_anywhere).
+
+### Async Runtimes
+
+While async runtimes add the latency of executing the runtime code, they also reduce the latency and memory usage associated with creating and switching between OS threads. Overall, do you end up with reduced latency? That depends on the application. If you're running a single threaded application with no concurrency, then probably not. If you're running a program with thousands of concurrent tasks, then probably.
 
 ## Putting it all Together
 
