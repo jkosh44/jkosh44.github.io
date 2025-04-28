@@ -76,6 +76,11 @@ Rust-Postgres is a PostgreSQL library for Rust.
 <br/>
 <br/>
 
+# [<img src="/assets/img/debezium-logo.png" width="75"/>](https://debezium.io/)[Debezium](https://debezium.io/)
+- [Fix Debezium Cassandra connector documentation](https://github.com/debezium/debezium/pull/6365)
+<br/>
+<br/>
+
 # [<img src="/assets/img/accumulo-logo.png" width="75"/>](https://accumulo.apache.org/) [Apache Accumulo](https://accumulo.apache.org/)
 Apache Accumulo is a sorted, distributed key/value store modelled after [Google Bigtable](https://research.google/pubs/pub27898/).
 - [Implement method to fetch property by property name prefix](https://github.com/apache/accumulo/pull/1701)
