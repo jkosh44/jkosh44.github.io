@@ -18,11 +18,11 @@ trait FileSystem {
     /// Overwrite the contents of the file identified by `file_id` with `contents`.
     fn write(&mut self, file_id: u64, contents: Vec<u8>);
     /// Read the contents of the file identified by `file_id`.
-    fn read(&self, file_id: u64) -> Option<&[u8]>;
+    fn read(&self, file_id: u64) -> Option<Vec<u8>>;
 }
 ```
 
-Next let's write some implementations of this trait. For now we'll stick to two implementations: an in-memory implementation and an Ext2 implementation.
+Next let's write some implementations of this trait. For now we'll stick to two implementations: an in-memory implementation and an temporary directory implementation.
 
 ```rust
 /// A file system that stores files in memory.
@@ -43,34 +43,42 @@ impl FileSystem for InMemoryFileSystem {
         self.files.insert(file_id, contents);
     }
 
-    fn read(&self, file_id: u64) -> Option<&[u8]> {
-        self.files.get(&file_id).map(|v| v.as_slice())
+    fn read(&self, file_id: u64) -> Option<Vec<u8>> {
+        self.files.get(&file_id).map(|v| v.clone())
     }
 }
 
-/// An implementation of the Ext2 file system.
-struct Ext2 {
-    /// Use your imagination and pretend that this is a real
-    /// implementation instead of wrapping the in-memory
-    /// implementation.
-    fs: InMemoryFileSystem,
+/// A file system that wraps a temp directory.
+struct TempDirFileSystem {
+    temp_dir: TempDir,
 }
 
-impl Ext2 {
+impl TempDirFileSystem {
     fn new() -> Self {
         Self {
-            fs: InMemoryFileSystem::new(),
+            temp_dir: TempDir::new().unwrap(),
         }
+    }
+
+    fn path(&self, file_id: u64) -> PathBuf {
+        self.temp_dir.path().join(file_id.to_string())
     }
 }
 
-impl FileSystem for Ext2 {
+impl FileSystem for TempDirFileSystem {
     fn write(&mut self, file_id: u64, contents: Vec<u8>) {
-        self.fs.write(file_id, contents);
+        let path = self.path(file_id);
+        let mut file = if !path.exists() {
+            File::create(path).unwrap()
+        } else {
+            File::open(path).unwrap()
+        };
+        file.write(&contents).unwrap();
     }
 
-    fn read(&self, file_id: u64) -> Option<&[u8]> {
-        self.fs.read(file_id)
+    fn read(&self, file_id: u64) -> Option<Vec<u8>> {
+        let path = self.path(file_id);
+        fs::read(path).ok()
     }
 }
 ```
@@ -106,7 +114,7 @@ impl<T: FileSystem> GenericDatabase<T> {
         self.fs.write(*id, value);
     }
 
-    fn get(&self, key: &[u8]) -> Option<&[u8]> {
+    fn get(&self, key: &[u8]) -> Option<Vec<u8>> {
         let id = self.key_map.get(key)?;
         self.fs.read(*id)
     }
@@ -121,11 +129,11 @@ fn test_generic_database() {
     let mut db: GenericDatabase<InMemoryFileSystem> =
         GenericDatabase::new(InMemoryFileSystem::new());
     db.set(b"ny".to_vec(), b"albany".to_vec());
-    assert_eq!(db.get(b"ny"), Some(b"albany".as_slice()));
+    assert_eq!(db.get(b"ny"), Some(b"albany".to_vec()));
 
-    let mut db: GenericDatabase<Ext2> = GenericDatabase::new(Ext2::new());
+    let mut db: GenericDatabase<TempDirFileSystem> = GenericDatabase::new(TempDirFileSystem::new());
     db.set(b"maryland".to_vec(), b"annapolis".to_vec());
-    assert_eq!(db.get(b"maryland"), Some(b"annapolis".as_slice()));
+    assert_eq!(db.get(b"maryland"), Some(b"annapolis".to_vec()));
 }
 ```
 
@@ -159,22 +167,22 @@ impl InMemoryDatabase {
         self.fs.write(*id, value);
     }
 
-    fn get(&self, key: &[u8]) -> Option<&[u8]> {
+    fn get(&self, key: &[u8]) -> Option<Vec<u8>> {
         let id = self.key_map.get(key)?;
         self.fs.read(*id)
     }
 }
 
-struct Ext2Database {
-    fs: Ext2,
+struct TempDirDatabase {
+    fs: TempDirFileSystem,
     next_id: u64,
     /// The value of each key is stored in its own file ... maybe not
     /// the most efficient.
     key_map: HashMap<Vec<u8>, u64>,
 }
 
-impl Ext2Database {
-    fn new(fs: Ext2) -> Self {
+impl TempDirDatabase {
+    fn new(fs: TempDirFileSystem) -> Self {
         Self {
             fs,
             next_id: 0,
@@ -191,7 +199,7 @@ impl Ext2Database {
         self.fs.write(*id, value);
     }
 
-    fn get(&self, key: &[u8]) -> Option<&[u8]> {
+    fn get(&self, key: &[u8]) -> Option<Vec<u8>> {
         let id = self.key_map.get(key)?;
         self.fs.read(*id)
     }
@@ -205,15 +213,15 @@ Our test will be re-written as.
 fn test_concrete_generic_database() {
     let mut db: InMemoryDatabase = InMemoryDatabase::new(InMemoryFileSystem::new());
     db.set(b"ny".to_vec(), b"albany".to_vec());
-    assert_eq!(db.get(b"ny"), Some(b"albany".as_slice()));
+    assert_eq!(db.get(b"ny"), Some(b"albany".to_vec()));
 
-    let mut db: Ext2Database = Ext2Database::new(Ext2::new());
+    let mut db: TempDirDatabase = TempDirDatabase::new(TempDirFileSystem::new());
     db.set(b"maryland".to_vec(), b"annapolis".to_vec());
-    assert_eq!(db.get(b"maryland"), Some(b"annapolis".as_slice()));
+    assert_eq!(db.get(b"maryland"), Some(b"annapolis".to_vec()));
 }
 ```
 
-This would be extremely annoying to write by hand because `InMemoryDatabase` and `Ext2Database` are almost identical in every way. One way to think about generics is that they are a template that the compiler will use to generate code. Generics let you define structs that are *generic* over a set of types, the set of types is defined by the trait bounds. In our example that set is all types that implement the `FileSystem` trait. In theory the compiler can generate code for every single type in that set, but it would be extremely wasteful. In practice the compiler only generates code for the types that are actually used with the generic struct.
+This would be extremely annoying to write by hand because `InMemoryDatabase` and `TempDirDatabase` are almost identical in every way. One way to think about generics is that they are a template that the compiler will use to generate code. Generics let you define structs that are *generic* over a set of types, the set of types is defined by the trait bounds. In our example that set is all types that implement the `FileSystem` trait. In theory the compiler can generate code for every single type in that set, but it would be extremely wasteful. In practice the compiler only generates code for the types that are actually used with the generic struct.
 
 Generics also work with functions, the concepts are mostly the same so this post will focus on structs, but for completeness here's an example with a function:
 
@@ -287,7 +295,7 @@ impl DynamicDatabase {
         self.fs.write(*id, value);
     }
 
-    fn get(&self, key: &[u8]) -> Option<&[u8]> {
+    fn get(&self, key: &[u8]) -> Option<Vec<u8>> {
         let id = self.key_map.get(key)?;
         self.fs.read(*id)
     }
@@ -303,11 +311,11 @@ Similarly, this implementation doesn't need to know the concrete details of the 
 fn test_dynamic_database() {
     let mut db: DynamicDatabase = DynamicDatabase::new(Box::new(InMemoryFileSystem::new()));
     db.set(b"ny".to_vec(), b"albany".to_vec());
-    assert_eq!(db.get(b"ny"), Some(b"albany".as_slice()));
+    assert_eq!(db.get(b"ny"), Some(b"albany".to_vec()));
 
-    let mut db: DynamicDatabase = DynamicDatabase::new(Box::new(Ext2::new()));
+    let mut db: DynamicDatabase = DynamicDatabase::new(Box::new(TempDirFileSystem::new()));
     db.set(b"maryland".to_vec(), b"annapolis".to_vec());
-    assert_eq!(db.get(b"maryland"), Some(b"annapolis".as_slice()));
+    assert_eq!(db.get(b"maryland"), Some(b"annapolis".to_vec()));
 }
 ```
 
@@ -345,7 +353,7 @@ Generic code results in multiple concrete types for a single generic struct. The
 
 ### Runtime
 
-Generic code leads to regular plain old types, which have the same runtime performance as if you had defined multiple types yourself. In the database example, `GenericDatabase<Ext2>` has identical performance to `Ext2Database` because in the compiled binary they would be identical.
+Generic code leads to regular plain old types, which have the same runtime performance as if you had defined multiple types yourself. In the database example, `GenericDatabase<TempDirFileSystem>` has identical performance to `TempDirDatabase` because in the compiled binary they would be identical.
 
 Dynamic dispatch on the other hand comes with a runtime performance penalty. The first performance hit comes from the vtable itself. It takes time to look up function implementations in the vtable and chase pointers. Additionally, the compiler and the CPU can not reason about the implementation of methods hidden behind dynamic dispatch, so the compiler cannot inline functions and the CPU has a worse time performing speculative execution and branch predictions. Dynamic dispatch also usually leads to more memory usage. Types need an extra pointer into the vtable which increases the size of structs by a pointer width.
 
@@ -802,11 +810,11 @@ impl FileSystem for InMemoryFileSystem {
     }
 }
 
-impl FileSystem for Ext2 {
+impl FileSystem for TempDirFileSystem {
     ...
 
     fn name() -> &'static str {
-        "Ext2"
+        "Temp FileSystem"
     }
 }
 ```
@@ -875,11 +883,11 @@ impl FileSystem for InMemoryFileSystem {
     }
 }
 
-impl FileSystem for Ext2 {
+impl FileSystem for TempDirFileSystem {
     ...
 
     fn name(&self) -> &'static str {
-        "Ext2"
+        "Temp FileSystem"
     }
 }
 
@@ -917,28 +925,28 @@ While generics and dynamic dispatch allow you to write code that is abstract ove
 ```rust
 enum FileSystemEnum {
     InMemory(InMemoryFileSystem),
-    Ext2(Ext2),
+    TempDir(TempDirFileSystem),
 }
 
 impl FileSystemEnum {
     fn write(&mut self, file_id: u64, contents: Vec<u8>) {
         match self {
             FileSystemEnum::InMemory(fs) => fs.write(file_id, contents),
-            FileSystemEnum::Ext2(fs) => fs.write(file_id, contents),
+            FileSystemEnum::TempDir(fs) => fs.write(file_id, contents),
         }
     }
 
-    fn read(&self, file_id: u64) -> Option<&[u8]> {
+    fn read(&self, file_id: u64) -> Option<Vec<u8>> {
         match self {
             FileSystemEnum::InMemory(fs) => fs.read(file_id),
-            FileSystemEnum::Ext2(fs) => fs.read(file_id),
+            FileSystemEnum::TempDir(fs) => fs.read(file_id),
         }
     }
 
     fn name(&self) -> &'static str {
         match self {
             FileSystemEnum::InMemory(fs) => fs.name(),
-            FileSystemEnum::Ext2(fs) => fs.name(),
+            FileSystemEnum::TempDir(fs) => fs.name(),
         }
     }
 }
@@ -976,7 +984,7 @@ impl EnumDatabase {
         self.fs.write(*id, value);
     }
 
-    fn get(&self, key: &[u8]) -> Option<&[u8]> {
+    fn get(&self, key: &[u8]) -> Option<Vec<u8>> {
         let id = self.key_map.get(key)?;
         self.fs.read(*id)
     }
