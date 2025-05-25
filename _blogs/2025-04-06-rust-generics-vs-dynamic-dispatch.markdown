@@ -9,7 +9,7 @@ If I say something that's incorrect, please let me know and I will correct it.
 
 All of the code used in this blog post can be found [here](https://github.com/jkosh44/generics-vs-dynamic-dispatch-rust/blob/main/src/main.rs).
 
-Generics and dynamic dispatch are both ways that programming languages allow you to abstract away the details of a concrete type. They allow you to specify some functionality without specifying concrete types. This can often help remove code duplication and make code more extensible.
+Generics and dynamic dispatch are both ways that programming languages allow you to abstract away the details of a concrete type. This can often help remove code duplication and make code more extensible.
 
 Let's say that we want to write a database. This database is going to write and read data directly from the file system without going through that pesky OS as an intermediary. This is a perfect use case for either generics or dynamic dispatch. First let's define an (extremely limited) trait for a file system.
 
@@ -22,64 +22,25 @@ trait FileSystem {
 }
 ```
 
-Next let's write some implementations of this trait. For now we'll stick to two implementations: an in-memory implementation and an temporary directory implementation.
+Next let's write some implementations of this trait. For now we'll stick to two implementations: A [FAT32](https://en.wikipedia.org/wiki/File_Allocation_Table) and a [EXT4](https://docs.kernel.org/filesystems/ext4/).
 
 ```rust
-/// A file system that stores files in memory.
-struct InMemoryFileSystem {
-    files: HashMap<u64, Vec<u8>>,
+/// An implementation of the FAT32 file system
+struct Fat32 {
+    ...
 }
 
-impl InMemoryFileSystem {
-    fn new() -> Self {
-        Self {
-            files: HashMap::new(),
-        }
-    }
+impl FileSystem for Fat32 {
+    ...
 }
 
-impl FileSystem for InMemoryFileSystem {
-    fn write(&mut self, file_id: u64, contents: Vec<u8>) {
-        self.files.insert(file_id, contents);
-    }
-
-    fn read(&self, file_id: u64) -> Option<Vec<u8>> {
-        self.files.get(&file_id).map(|v| v.clone())
-    }
+/// An implementation of the EXT4 file system
+struct Ext4 {
+    ...
 }
 
-/// A file system that wraps a temp directory.
-struct TempDirFileSystem {
-    temp_dir: TempDir,
-}
-
-impl TempDirFileSystem {
-    fn new() -> Self {
-        Self {
-            temp_dir: TempDir::new().unwrap(),
-        }
-    }
-
-    fn path(&self, file_id: u64) -> PathBuf {
-        self.temp_dir.path().join(file_id.to_string())
-    }
-}
-
-impl FileSystem for TempDirFileSystem {
-    fn write(&mut self, file_id: u64, contents: Vec<u8>) {
-        let path = self.path(file_id);
-        let mut file = if !path.exists() {
-            File::create(path).unwrap()
-        } else {
-            File::open(path).unwrap()
-        };
-        file.write(&contents).unwrap();
-    }
-
-    fn read(&self, file_id: u64) -> Option<Vec<u8>> {
-        let path = self.path(file_id);
-        fs::read(path).ok()
-    }
+impl FileSystem for Ext4 {
+    ...
 }
 ```
 
@@ -126,12 +87,13 @@ Notice how this implementation doesn't need to know the concrete details of the 
 ```rust
 #[test]
 fn test_generic_database() {
-    let mut db: GenericDatabase<InMemoryFileSystem> =
-        GenericDatabase::new(InMemoryFileSystem::new());
+    let fs = Fat32::new();
+    let mut db = GenericDatabase::new(fs);
     db.set(b"ny".to_vec(), b"albany".to_vec());
     assert_eq!(db.get(b"ny"), Some(b"albany".to_vec()));
 
-    let mut db: GenericDatabase<TempDirFileSystem> = GenericDatabase::new(TempDirFileSystem::new());
+    let fs = Ext4::new();
+    let mut db = GenericDatabase::new(fs);
     db.set(b"maryland".to_vec(), b"annapolis".to_vec());
     assert_eq!(db.get(b"maryland"), Some(b"annapolis".to_vec()));
 }
@@ -141,16 +103,16 @@ When we write generic structs, the compiler is actually generating multiple diff
 
 
 ```rust
-struct InMemoryDatabase {
-    fs: InMemoryFileSystem,
+struct Fat32Database {
+    fs: Fat32,
     next_id: u64,
     /// The value of each key is stored in its own file ... maybe not
     /// the most efficient.
     key_map: HashMap<Vec<u8>, u64>,
 }
 
-impl InMemoryDatabase {
-    fn new(fs: InMemoryFileSystem) -> Self {
+impl Fat32Database {
+    fn new(fs: Fat32) -> Self {
         Self {
             fs,
             next_id: 0,
@@ -173,16 +135,16 @@ impl InMemoryDatabase {
     }
 }
 
-struct TempDirDatabase {
-    fs: TempDirFileSystem,
+struct Ext4Database {
+    fs: Ext4,
     next_id: u64,
     /// The value of each key is stored in its own file ... maybe not
     /// the most efficient.
     key_map: HashMap<Vec<u8>, u64>,
 }
 
-impl TempDirDatabase {
-    fn new(fs: TempDirFileSystem) -> Self {
+impl Ext4Database {
+    fn new(fs: Ext4) -> Self {
         Self {
             fs,
             next_id: 0,
@@ -211,17 +173,19 @@ Our test will be re-written as.
 ```rust
 #[test]
 fn test_concrete_generic_database() {
-    let mut db: InMemoryDatabase = InMemoryDatabase::new(InMemoryFileSystem::new());
+    let fs = Fat32::new();
+    let mut db = Fat32Database::new(fs);
     db.set(b"ny".to_vec(), b"albany".to_vec());
     assert_eq!(db.get(b"ny"), Some(b"albany".to_vec()));
 
-    let mut db: TempDirDatabase = TempDirDatabase::new(TempDirFileSystem::new());
+    let fs = Ext4::new();
+    let mut db = Ext4Database::new(fs);
     db.set(b"maryland".to_vec(), b"annapolis".to_vec());
     assert_eq!(db.get(b"maryland"), Some(b"annapolis".to_vec()));
 }
 ```
 
-This would be extremely annoying to write by hand because `InMemoryDatabase` and `TempDirDatabase` are almost identical in every way. One way to think about generics is that they are a template that the compiler will use to generate code. Generics let you define structs that are *generic* over a set of types, the set of types is defined by the trait bounds. In our example that set is all types that implement the `FileSystem` trait. In theory the compiler can generate code for every single type in that set, but it would be extremely wasteful. In practice the compiler only generates code for the types that are actually used with the generic struct.
+This would be extremely annoying to write by hand because `Fat32Database` and `Ext4Database` are almost identical in every way. One way to think about generics is that they are a template that the compiler will use to generate code. Generics let you define structs that are *generic* over a set of types, the set of types is defined by the trait bounds. In our example that set is all types that implement the `FileSystem` trait. In theory the compiler can generate code for every single type in that set, but it would be extremely wasteful. In practice the compiler only generates code for the types that are actually used with the generic struct.
 
 Generics also work with functions, the concepts are mostly the same so this post will focus on structs, but for completeness here's an example with a function:
 
@@ -309,11 +273,13 @@ Similarly, this implementation doesn't need to know the concrete details of the 
 ```rust
 #[test]
 fn test_dynamic_database() {
-    let mut db: DynamicDatabase = DynamicDatabase::new(Box::new(InMemoryFileSystem::new()));
+    let fs = Box::new(Fat32::new());
+    let mut db = DynamicDatabase::new(fs);
     db.set(b"ny".to_vec(), b"albany".to_vec());
     assert_eq!(db.get(b"ny"), Some(b"albany".to_vec()));
 
-    let mut db: DynamicDatabase = DynamicDatabase::new(Box::new(TempDirFileSystem::new()));
+    let fs = Box::new(Ext4::new());
+    let mut db = DynamicDatabase::new(fs);
     db.set(b"maryland".to_vec(), b"annapolis".to_vec());
     assert_eq!(db.get(b"maryland"), Some(b"annapolis".to_vec()));
 }
@@ -353,7 +319,7 @@ Generic code results in multiple concrete types for a single generic struct. The
 
 ### Runtime
 
-Generic code leads to regular plain old types, which have the same runtime performance as if you had defined multiple types yourself. In the database example, `GenericDatabase<TempDirFileSystem>` has identical performance to `TempDirDatabase` because in the compiled binary they would be identical.
+Generic code leads to regular plain old types, which have the same runtime performance as if you had defined multiple types yourself. In the database example, `GenericDatabase<Fat32>` has identical performance to `Fat32Database` because in the compiled binary they would be identical.
 
 Dynamic dispatch on the other hand comes with a runtime performance penalty. The first performance hit comes from the vtable itself. It takes time to look up function implementations in the vtable and chase pointers. Additionally, the compiler and the CPU can not reason about the implementation of methods hidden behind dynamic dispatch, so the compiler cannot inline functions and the CPU has a worse time performing speculative execution and branch predictions. Dynamic dispatch also usually leads to more memory usage. Types need an extra pointer into the vtable which increases the size of structs by a pointer width.
 
@@ -381,6 +347,8 @@ How much stack space does this function need?
 There is no answer to these questions, `UnsizedType` (as the name suggests) has no size. It depends on what type is actually used for `t`. If we use a `u64` then it will have a size of 64 bits. If we use an `i8` then it will have a size of 8 bits. For that reason, we must ALWAYS access a trait object through a pointer because pointers always have a known size at compile time. Often people use `Box` which is a pointer to the heap, but it's a misconception that dynamic dispatch always needs a heap allocation. For example, our `dynamic_println` function did not require any heap allocations. However, `Box` is often the easiest pointer type to use which often means that dynamic dispatch will result in a heap allocation. No matter what pointer type we use though, we're still adding a pointer and a layer of indirection to access the type, which can add latency and hurt cache coherency.
 
 Take for example the following two types that implement an 1,000,000 sized array of any type that implements `AddOne`. One version uses generics while the other uses dynamic dispatch.
+
+Consider the following comparison between generics and dynamic dispatch.
 
 ```rust
 trait AddOne {
@@ -434,7 +402,7 @@ If runtime performance was all someone cared about, then a reasonable question m
 
 ### Generic Virality
 
-Generic types tend to have a viral nature that infect large parts of a code. Taking a look at our `GenericDatabase` type, any type that uses `GenericDatabase` needs to either be generic, use a concrete type, or use dynamic dispatch. For example, these two useless structs also need to be generic over the `FileSystem` trait (or they could have used dynamic dispatch).
+Generic types tend to have a viral nature that infect large parts of a code. Taking a look at our `GenericDatabase` type, any type that uses `GenericDatabase` needs to either be generic, use a concrete type, or use dynamic dispatch. For example, these two structs also need to be generic over the `FileSystem` trait (or they could have used dynamic dispatch).
 
 ```rust
 struct GenericDatabaseWrapper<T: FileSystem> {
@@ -520,7 +488,7 @@ fn test_dynamic_cast() {
 
     let t = Mutex::new(42);
     // Fails to compile because `Mutex` does not implement `Display`.
-    dynamic_cast(&t);
+    // dynamic_cast(&t);
 }
 ```
 
@@ -597,7 +565,7 @@ Rust knows that `t2` is an integer, because `GenericProcessor` is actually conve
 
 ### Conditional Compilation
 
-Since generic structs allow programmers to create multiple different types, they can allow for greater type safety. Rust allows you to conditionally create methods on a subset of the concrete types created from generic types. Consider a type similar to the `GenericVec` from earlier, we can conditionally add a method to that type with the following syntax.
+Since generic structs allow programmers to create multiple different types, they have more opportunities for type safety. Rust allows you to conditionally create methods on a subset of the concrete types created from generic types. Consider a type similar to the `GenericVec` from earlier, we can conditionally add a method to that type with the following syntax.
 
 ```rust
 struct GenericDisplayVec<T: Display> {
@@ -629,7 +597,7 @@ fn test_generic_vec_sum() {
     let _sgv1 = GenericDisplayVec { v: sv1 };
     let _sgv2 = GenericDisplayVec { v: sv2 };
     // Does not compile because the `sum` method does not exist for `GenericDisplayVec<&str>`.
-    // let _sgv3 = _sgv1.sum(&_sgv2);
+    // let _sgv3 = sgv1.sum(&sgv2);
 }
 ```
 
@@ -723,7 +691,7 @@ impl Session<ReadOnly> {
 }
 ```
 
-These methods CANNOT take `&mut self`, a `Session<ReadOnly>` cannot be directly converted into a `Session<ReadWrite>` and vice versa. These are two completely separate types, so we need to make a new instance. You cannot directly convert a `Vec` into a `HashSet` without creating a new object.
+These methods CANNOT take `&mut self`, a `Session<ReadOnly>` cannot be directly converted into a `Session<ReadWrite>` and vice versa. These are two completely separate types, so we need to make a new instance. This would be the same as trying to directly convert a `Vec` into a `HashSet` without creating a new object.
 
 ```rust
 #[test]
@@ -758,7 +726,7 @@ Before reading this section, try to rewrite this function using dynamic dispatch
 
 ...
 
-Did you figure it out? The generic version took me about 30 seconds to write. I spent about 15 minutes, with the help of ChatGPT, on the dynamic dispatch before giving up. Why is it so hard? Conceptually it's pretty simple, except two arguments that can be added together to produce a type that can be printed via `Debug`. Then add them together and print their sum.
+Did you figure it out? The generic version took me about 30 seconds to write. I spent about 15 minutes, with the help of ChatGPT, on the dynamic dispatch before giving up. Why is it so hard? Conceptually it's pretty simple, accept two arguments that can be added together to produce a type that can be printed via `Debug`. Then add them together and print their sum.
 
 The issue comes from [dyn compatibility](https://doc.rust-lang.org/reference/items/traits.html#dyn-compatibility) formerly known as object safety. When attempting to write the function you may have seen errors that look like this:
 
@@ -802,19 +770,19 @@ trait FileSystem {
     fn name() -> &'static str;
 }
 
-impl FileSystem for InMemoryFileSystem {
+impl FileSystem for Fat32 {
     ...
 
     fn name() -> &'static str {
-        "In Memory FileSystem"
+        "FAT32"
     }
 }
 
-impl FileSystem for TempDirFileSystem {
+impl FileSystem for Ext4 {
     ...
 
     fn name() -> &'static str {
-        "Temp FileSystem"
+        "EXT4"
     }
 }
 ```
@@ -875,19 +843,19 @@ trait FileSystem {
     fn name(&self) -> &'static str;
 }
 
-impl FileSystem for InMemoryFileSystem {
+impl FileSystem for Fat32 {
     ...
 
     fn name(&self) -> &'static str {
-        "In Memory FileSystem"
+        "FAT32"
     }
 }
 
-impl FileSystem for TempDirFileSystem {
+impl FileSystem for Ext3 {
     ...
 
     fn name(&self) -> &'static str {
-        "Temp FileSystem"
+        "EXT4"
     }
 }
 
@@ -924,29 +892,29 @@ While generics and dynamic dispatch allow you to write code that is abstract ove
 
 ```rust
 enum FileSystemEnum {
-    InMemory(InMemoryFileSystem),
-    TempDir(TempDirFileSystem),
+    Fat32(Fat32),
+    Ext4(Ext4),
 }
 
 impl FileSystemEnum {
     fn write(&mut self, file_id: u64, contents: Vec<u8>) {
         match self {
-            FileSystemEnum::InMemory(fs) => fs.write(file_id, contents),
-            FileSystemEnum::TempDir(fs) => fs.write(file_id, contents),
+            FileSystemEnum::Fat32(fs) => fs.write(file_id, contents),
+            FileSystemEnum::Ext4(fs) => fs.write(file_id, contents),
         }
     }
 
     fn read(&self, file_id: u64) -> Option<Vec<u8>> {
         match self {
-            FileSystemEnum::InMemory(fs) => fs.read(file_id),
-            FileSystemEnum::TempDir(fs) => fs.read(file_id),
+            FileSystemEnum::Fat32(fs) => fs.read(file_id),
+            FileSystemEnum::Ext4(fs) => fs.read(file_id),
         }
     }
 
     fn name(&self) -> &'static str {
         match self {
-            FileSystemEnum::InMemory(fs) => fs.name(),
-            FileSystemEnum::TempDir(fs) => fs.name(),
+            FileSystemEnum::Fat32(fs) => fs.name(),
+            FileSystemEnum::Ext4(fs) => fs.name(),
         }
     }
 }
