@@ -28,6 +28,7 @@ permalink: /oss/
 - Fix NULL input handling for array functions [[0]](https://github.com/apache/datafusion/pull/14289) [[1]](https://github.com/apache/datafusion/pull/14527) [[2]](https://github.com/apache/datafusion/pull/14531)
 - [Fix edge cases in `array_slice` function](https://github.com/apache/datafusion/pull/14489)
 - [Restore support for nested expressions in the CLI](https://github.com/apache/datafusion/pull/14614)
+- [Add support for Arrow Duration type in Substrait plans](https://github.com/apache/datafusion/pull/16503)
 <br/>
 <br/>
 
