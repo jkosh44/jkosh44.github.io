@@ -32,6 +32,11 @@ permalink: /oss/
 <br/>
 <br/>
 
+# [<img src="/assets/img/tokio-logo.svg" width="75"/>](https://tokio.rs/) [tokio-metrics](https://tokio.rs/)
+- [Add metrics.rs integration for task metrics](https://github.com/tokio-rs/tokio-metrics/pull/100)
+<br/>
+<br/>
+
 # [pg_duration](https://github.com/jkosh44/pg_duration)
 pg_duration is a PostgreSQL extension written by me (Joseph Koshakow) that adds a duration data type to PostgreSQL.
 <br/>
