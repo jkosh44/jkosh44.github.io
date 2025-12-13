@@ -34,6 +34,8 @@ permalink: /oss/
 
 # [<img src="/assets/img/tokio-logo.svg" width="75"/>](https://tokio.rs/) [tokio-metrics](https://tokio.rs/)
 - [Add metrics.rs integration for task metrics](https://github.com/tokio-rs/tokio-metrics/pull/100)
+- [Fix documentation errors](https://github.com/tokio-rs/tokio-metrics/pull/103)
+- [Add metrics.rs integration for derived metrics](github.com/tokio-rs/tokio-metrics/pull/104)
 <br/>
 <br/>
 
