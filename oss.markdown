@@ -36,6 +36,7 @@ permalink: /oss/
 - [Add metrics.rs integration for task metrics](https://github.com/tokio-rs/tokio-metrics/pull/100)
 - [Fix documentation errors](https://github.com/tokio-rs/tokio-metrics/pull/103)
 - [Add metrics.rs integration for derived metrics](github.com/tokio-rs/tokio-metrics/pull/104)
+- [Update README and module docs](https://github.com/tokio-rs/tokio-metrics/pull/107)
 <br/>
 <br/>
 
