@@ -48,6 +48,7 @@ pg_duration is a PostgreSQL extension written by me (Joseph Koshakow) that adds 
 
 # [<img src="/assets/img/arrow-logo.svg" width="75"/>](https://crates.io/crates/object_store) [Apache Arrow Object Store](https://crates.io/crates/object_store)
   - [Fix empty multipart uploads to GCP](https://github.com/apache/datafusion/pull/14532)
+  - [Clarify `ShuffleResolver` doc-comements](https://github.com/apache/arrow-rs-object-store/pull/645)
 <br/>
 <br/>
 
