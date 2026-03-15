@@ -4,6 +4,12 @@ title: Experience
 permalink: /experience/
 ---
 
+# [<img src="/assets/img/datadog-logo.png" width="75"/>](https://www.datadoghq.com/) Datadog
+#### **Software Engineer**
+*Feb 2025 - Present*
+- Working on durable storage for key-value data
+<br/>
+<br/>
 
 # [<img src="/assets/img/materialize_logo.png" width="75"/>](https://materialize.com/) Materialize
 #### **Software Engineer**
