@@ -33,6 +33,11 @@ permalink: /oss/
 <br/>
 <br/>
 
+# [openraft](https://github.com/databendlabs/openraft)
+- [Make leader restore upon restart configurable](https://github.com/databendlabs/openraft/commit/f4b5f61dea3a70c8bb5207e3b56b1013997ebe67)
+<br/>
+<br/>
+
 # [<img src="/assets/img/tokio-logo.svg" width="75"/>](https://tokio.rs/) [tokio-metrics](https://tokio.rs/)
 - [Add metrics.rs integration for task metrics](https://github.com/tokio-rs/tokio-metrics/pull/100)
 - [Fix documentation errors](https://github.com/tokio-rs/tokio-metrics/pull/103)
