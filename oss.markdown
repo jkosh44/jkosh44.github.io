@@ -36,6 +36,7 @@ permalink: /oss/
 # [openraft](https://github.com/databendlabs/openraft)
 - [Make leader restore upon restart configurable](https://github.com/databendlabs/openraft/commit/f4b5f61dea3a70c8bb5207e3b56b1013997ebe67)
 - [Fix overflow when triggering snapshots](https://github.com/databendlabs/openraft/commit/b549b0f40d94311a870dce7e8da3accf121d5b67)
+- [Fix initial value for RaftMetrics state](https://github.com/databendlabs/openraft/commit/8fd783d40a2c966a6ec37b55fc4854254dbcd4ba)
 <br/>
 <br/>
 
