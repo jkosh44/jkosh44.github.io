@@ -37,6 +37,8 @@ permalink: /oss/
 - [Make leader restore upon restart configurable](https://github.com/databendlabs/openraft/commit/f4b5f61dea3a70c8bb5207e3b56b1013997ebe67)
 - [Fix overflow when triggering snapshots](https://github.com/databendlabs/openraft/commit/b549b0f40d94311a870dce7e8da3accf121d5b67)
 - [Fix initial value for RaftMetrics state](https://github.com/databendlabs/openraft/commit/8fd783d40a2c966a6ec37b55fc4854254dbcd4ba)
+- [Reproduce frozen leader bug](https://github.com/databendlabs/openraft/commit/70ffe61a33ef7c00931deb91dcc5bd1e26f223a6)
+- [Close and drain heartbeat streams](https://github.com/databendlabs/openraft/commit/9adbb2ae87227e95ce5fac180df13b9f7e3ce963)
 <br/>
 <br/>
 
